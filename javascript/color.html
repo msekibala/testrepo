@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Color</title>
+    <script>
+        // arrow syntax for functions
+        document.addEventListener('DOMContentLoaded', function(){
+            document.querySelector('select').onchange = function(){
+                document.querySelector('#hello').style.color = this.value;
+            }
+            //document.querySelectorAll('button').forEach(function(button){
+               // button.onclick = function(){
+                   // document.querySelector('#hello').style.color = button.dataset.color;
+                
+            
+        });
+    </script>
+</head>
+<body>
+    <h1 id="hello">Hello!</h1>
+    <select>
+        <option value="black">Black</option>
+        <option value="red">Red</option>
+        <option value="green">Green</option>
+        <option value="blue">Blue</option>
+    </select>
+    <!--
+    <button data-color="red">Red</button>
+    <button data-color="green">Green</button>
+    <button data-color="blue">Blue</button>
+    -->
+    
+</body>
+
+</html>
