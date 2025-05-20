@@ -1,0 +1,6 @@
+{
+    "recommendations": [
+        "cweijan.vscode-postgresql-client2",
+        "ms-ossdata.vscode-postgresql"
+    ]
+}
