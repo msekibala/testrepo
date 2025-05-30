@@ -4,29 +4,12 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from django.db import models
 from django.http import Http404
+from core.abstract.models import AbstractManager, AbstractModel
 
 # Create your models here.
-class UserManager (BaseUserManager):
+class UserManager (BaseUserManager,AbstractManager):
     
-    def get_object_by_public_id(self, public_id):
-          """
-    Retrieves a user object by its public ID.
-
-    Args:
-        public_id (str): The public ID of the user to retrieve.
-
-    Returns:
-        User: The user object associated with the given public ID.
-
-    Raises:
-        Http404: If the user is not found.
-    """
-          try:
-              return self.get(public_id = public_id)
-              
-          
-          except (ObjectDoesNotExist, ValueError, TypeError) as exc:
-              raise Http404 from exc
+    
     
     def create_user(self, username, email, password=None,**kwargs):
         """Create and return a `User` with an email, phone
@@ -72,12 +55,8 @@ class UserManager (BaseUserManager):
     
         
 
-class User(AbstractBaseUser,PermissionsMixin):
-    public_id = models.UUIDField(db_index=True,unique=True,
-                                 default=uuid.uuid4,editable=False)
-    
+class User(AbstractModel,AbstractBaseUser,PermissionsMixin):
     username = models.CharField(db_index=True,max_length=255,unique=True)
-    
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     bio = models.TextField(blank=True,null=True)
@@ -85,13 +64,15 @@ class User(AbstractBaseUser,PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
     avatar = models.ImageField(
         upload_to='images/',
         null=True,
         blank=True,
         default='avatar/default.png')
+    posts_liked = models.ManyToManyField(
+        'core_post.Post',
+        related_name='liked_by',
+    )
     
     
     USERNAME_FIELD = 'email'
@@ -105,7 +86,15 @@ class User(AbstractBaseUser,PermissionsMixin):
     @property
     def name(self):
         return f"{self.first_name} {self.last_name}"
-    
+    def like(self,post):
+        """Like `post` if it hasn't been liked yet."""
+        return self.posts_liked.add(post)
+    def remove_like(self,post):
+        """Remove a like from `post`."""
+        return self.posts_liked.remove(post)
+    def has_liked(self,post):
+        """Return True if `post` has been liked by the user."""
+        return self.posts_liked.filter(id=post.id).exists()
     
 
         
